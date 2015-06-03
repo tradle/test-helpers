@@ -1,7 +1,6 @@
 
 var Wallet = require('simple-wallet')
 var bitcoin = require('bitcoinjs-lib')
-var scripts = require('cointx').scripts
 
 module.exports = function fakeWallet(privateWif, amount) {
   if (typeof privateWif === 'number') {
@@ -14,7 +13,7 @@ module.exports = function fakeWallet(privateWif, amount) {
     bitcoin.ECKey.makeRandom('testnet')
 
   var total = 100000
-  var numUnspents = 5
+  var numUnspents = 1
   var unspents = []
   var w = new Wallet({
     network: 'testnet',
