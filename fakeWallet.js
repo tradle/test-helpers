@@ -1,8 +1,7 @@
-
 var Wallet = require('simple-wallet')
 var bitcoin = require('bitcoinjs-lib')
 
-module.exports = function fakeWallet(privateWif, amount) {
+module.exports = function fakeWallet (privateWif, amount) {
   if (typeof privateWif === 'number') {
     amount = privateWif
     privateWif = null
@@ -19,11 +18,11 @@ module.exports = function fakeWallet(privateWif, amount) {
     network: 'testnet',
     blockchain: {
       addresses: {
-        unspents: function(addr, cb) {
+        unspents: function (addr, cb) {
           cb(null, unspents)
         },
-        summary: function(addrs, cb) {
-          cb(null, addrs.map(function(a) {
+        summary: function (addrs, cb) {
+          cb(null, addrs.map(function (a) {
             return {
               balance: total
             }
@@ -31,7 +30,7 @@ module.exports = function fakeWallet(privateWif, amount) {
         }
       },
       transactions: {
-        propagate: function(tx, cb) {
+        propagate: function (tx, cb) {
           cb()
         }
       }
@@ -40,7 +39,7 @@ module.exports = function fakeWallet(privateWif, amount) {
   })
 
   var tx = fund(w.address, total, numUnspents)
-  tx.outs.forEach(function(o, i) {
+  tx.outs.forEach(function (o, i) {
     unspents.push({
       txId: tx.getId(),
       confirmations: 6,
@@ -53,7 +52,7 @@ module.exports = function fakeWallet(privateWif, amount) {
   return w
 }
 
-function fund(address, amount, n) {
+function fund (address, amount, n) {
   var prevTx = new bitcoin.Transaction()
   prevTx.addInput(new bitcoin.Transaction(), 0)
   for (var i = 0; i < n; i++) {

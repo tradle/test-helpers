@@ -5,8 +5,12 @@
   "description": "helpers, mocks, for testing tradle components",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "style": "standard"
   },
+  "pre-commit": [
+    "style"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tradle/test-helpers.git"
@@ -27,5 +31,9 @@
     "q": "^1.4.1",
     "simple-wallet": "git://github.com/mvayngrib/simple-wallet#bitcoinjs-lib",
     "tradle-utils": "git://github.com/tradle/tradle-utils.git"
+  },
+  "devDependencies": {
+    "pre-commit": "^1.0.7",
+    "standard": "^4.0.1"
   }
 }
