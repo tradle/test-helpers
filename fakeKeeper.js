@@ -23,7 +23,7 @@ function keeperForMap (map) {
     getAll: function () {
       return Q.resolve(values(map))
     },
-    close: function () {
+    destroy: function () {
       return Q.resolve()
     },
     isKeeper: function () {
