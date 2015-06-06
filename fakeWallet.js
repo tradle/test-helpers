@@ -1,18 +1,23 @@
 var Wallet = require('simple-wallet')
 var bitcoin = require('bitcoinjs-lib')
+var typeforce = require('typeforce')
 
-module.exports = function fakeWallet (privateWif, amount) {
-  if (typeof privateWif === 'number') {
-    amount = privateWif
-    privateWif = null
-  }
+module.exports = function (config) {
+  typeforce({
+    priv: 'String',
+    unspents: 'Array'
+  }, config)
+
+  var privateWif = config.priv
+  var walletUnspents = config.unspents
+  var total = walletUnspents.reduce(function (sum, n) {
+    return sum + n
+  }, 0)
 
   var priv = privateWif ?
     bitcoin.ECKey.fromWIF(privateWif) :
     bitcoin.ECKey.makeRandom('testnet')
 
-  var total = 100000
-  var numUnspents = 1
   var unspents = []
   var w = new Wallet({
     network: 'testnet',
@@ -30,15 +35,14 @@ module.exports = function fakeWallet (privateWif, amount) {
         }
       },
       transactions: {
-        propagate: function (tx, cb) {
-          cb()
-        }
+        propagate: sendTx
       }
     },
     priv: priv
   })
 
-  var tx = fund(w.address, total, numUnspents)
+  w.sendTx = sendTx
+  var tx = fund(w.address, walletUnspents)
   tx.outs.forEach(function (o, i) {
     unspents.push({
       txId: tx.getId(),
@@ -52,12 +56,16 @@ module.exports = function fakeWallet (privateWif, amount) {
   return w
 }
 
-function fund (address, amount, n) {
+function fund (address, walletUnspents) {
   var prevTx = new bitcoin.Transaction()
   prevTx.addInput(new bitcoin.Transaction(), 0)
-  for (var i = 0; i < n; i++) {
-    prevTx.addOutput(address, amount / n)
-  }
+  walletUnspents.forEach(function (amount) {
+    prevTx.addOutput(address, amount)
+  })
 
   return prevTx
+}
+
+function sendTx (tx, cb) {
+  cb()
 }
