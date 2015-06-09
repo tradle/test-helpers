@@ -2,26 +2,42 @@ var Wallet = require('simple-wallet')
 var bitcoin = require('bitcoinjs-lib')
 var typeforce = require('typeforce')
 
-module.exports = function (config) {
+module.exports = function (options) {
   typeforce({
-    priv: 'String',
     unspents: 'Array'
-  }, config)
+  }, options)
 
-  var privateWif = config.priv
-  var walletUnspents = config.unspents
+  var walletUnspents = options.unspents
   var total = walletUnspents.reduce(function (sum, n) {
     return sum + n
   }, 0)
 
-  var priv = privateWif ?
-    bitcoin.ECKey.fromWIF(privateWif) :
-    bitcoin.ECKey.makeRandom('testnet')
+  var priv = options.priv
+  if (typeof priv === 'string') {
+    priv = bitcoin.ECKey.fromWIF(priv)
+  } else if (!priv) {
+    priv = bitcoin.ECKey.makeRandom(true)
+  }
+
+  if (!priv) throw new Error('invalid "priv"')
 
   var unspents = []
+  var blocks = []
   var w = new Wallet({
     network: 'testnet',
-    blockchain: {
+    blockchain: options.blockchain || {
+      blocks: {
+        get: function (heights, cb) {
+          process.nextTick(function () {
+            var matched = blocks.filter(function (b) {
+              return heights.indexOf(b.height) !== -1
+            })
+
+            if (matched.length) return cb(null, matched)
+            else return cb(new Error('no blocks found'))
+          })
+        }
+      },
       addresses: {
         unspents: function (addr, cb) {
           cb(null, unspents)
@@ -35,13 +51,18 @@ module.exports = function (config) {
         }
       },
       transactions: {
-        propagate: sendTx
+        propagate: function (tx, cb) {
+          var b = new bitcoin.Block()
+          b.height = blocks.length
+          b.transactions = [bitcoin.Transaction.fromHex(tx)]
+          blocks.push(b)
+          sendTx(tx, cb)
+        }
       }
     },
     priv: priv
   })
 
-  w.sendTx = sendTx
   var tx = fund(w.address, walletUnspents)
   tx.outs.forEach(function (o, i) {
     unspents.push({
@@ -60,7 +81,7 @@ function fund (address, walletUnspents) {
   var prevTx = new bitcoin.Transaction()
   prevTx.addInput(new bitcoin.Transaction(), 0)
   walletUnspents.forEach(function (amount) {
-    prevTx.addOutput(address, amount)
+    prevTx.addOutput(address.toString(), amount)
   })
 
   return prevTx
