@@ -24,7 +24,7 @@ module.exports = function (options) {
   var unspents = []
   var blocks = []
   var w = new Wallet({
-    network: 'testnet',
+    networkName: options.networkName || 'testnet',
     blockchain: options.blockchain || {
       blocks: {
         get: function (heights, cb) {
