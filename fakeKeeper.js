@@ -3,6 +3,7 @@ var utils = require('tradle-utils')
 
 function keeperForMap (map) {
   return {
+    _map: map,
     put: function (key, val) {
       var numPut = 0
       if (!(key in map)) {
