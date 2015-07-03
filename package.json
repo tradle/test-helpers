@@ -30,7 +30,7 @@
     "bitcoinjs-lib": "^1.4.1",
     "q": "^1.4.1",
     "simple-wallet": "git://github.com/mvayngrib/simple-wallet",
-    "tradle-utils": "git://github.com/tradle/tradle-utils",
+    "tradle-utils": "^0.1.3",
     "typeforce": "^1.0.0"
   },
   "devDependencies": {
