@@ -14,7 +14,7 @@ function keeperForMap (map) {
       return Q.resolve(numPut)
     },
     getOne: function (key) {
-      return (key in map) ? Q.resolve(map[key]) : Q.resolve()
+      return (key in map) ? Q.resolve(map[key]) : Q.reject(new Error('not found'))
     },
     getMany: function (keys) {
       return Q.resolve(keys.map(function (key) {
