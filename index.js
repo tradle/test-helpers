@@ -1,4 +1,4 @@
 module.exports = {
-  FakeKeeper: require('./fakeKeeper'),
+  fakeKeeper: require('./fakeKeeper'),
   fakeWallet: require('./fakeWallet')
 }
