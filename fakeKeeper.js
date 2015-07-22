@@ -2,7 +2,7 @@ var Q = require('q')
 var utils = require('tradle-utils')
 
 function keeperForMap (map) {
-  return {
+  var keep = {
     _map: map,
     put: function (key, val) {
       var numPut = 0
@@ -17,9 +17,12 @@ function keeperForMap (map) {
       return (key in map) ? Q.resolve(map[key]) : Q.reject(new Error('not found'))
     },
     getMany: function (keys) {
-      return Q.resolve(keys.map(function (key) {
-        return map[key]
-      }))
+      return Q.allSettled(keys.map(keep.getOne))
+        .then(function (results) {
+          return results.map(function (r) {
+            return r.value
+          })
+        })
     },
     getAll: function () {
       return Q.resolve(values(map))
@@ -31,6 +34,8 @@ function keeperForMap (map) {
       return true
     }
   }
+
+  return keep
 }
 
 function keeperForData (data) {
