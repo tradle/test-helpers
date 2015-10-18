@@ -43,57 +43,63 @@ module.exports = function (options) {
       },
       addresses: {
         transactions: function (addrs, height, cb) {
-          if (typeof height === 'function') {
-            cb = height
-            height = 0
-          }
+          process.nextTick(function () {
+            if (typeof height === 'function') {
+              cb = height
+              height = 0
+            }
 
-          height = height || 0
-          var txs = blocks.filter(function (b) {
-            return b.height >= height
-          })
-          .reduce(function (txs, b) {
-            return txs.concat(b.transactions.filter(function (tx) {
-              tx.block = b // ugly side effect
+            height = height || 0
+            var txs = blocks.filter(function (b) {
+              return b.height >= height
+            })
+            .reduce(function (txs, b) {
+              return txs.concat(b.transactions.filter(function (tx) {
+                tx.block = b // ugly side effect
 
-              var added = tx.outs.map(function (out) {
-                return utils.getAddressFromOutput(out, networkName)
-              }).some(hasAddr)
-
-              if (!added) {
-                added = tx.ins.map(function (input) {
-                  return utils.getAddressFromInput(input, networkName)
+                var added = tx.outs.map(function (out) {
+                  return utils.getAddressFromOutput(out, networkName)
                 }).some(hasAddr)
-              }
 
-              return added
+                if (!added) {
+                  added = tx.ins.map(function (input) {
+                    return utils.getAddressFromInput(input, networkName)
+                  }).some(hasAddr)
+                }
 
-              function hasAddr (addr) {
-                return addrs.indexOf(addr) !== -1
+                return added
+
+                function hasAddr (addr) {
+                  return addrs.indexOf(addr) !== -1
+                }
+              }))
+            }, [])
+
+            if (!txs.length) return cb(new Error('no txs found'))
+
+            cb(null, txs.map(function (tx) {
+              return {
+                txId: tx.getId(),
+                txHex: tx.toHex(),
+                blockId: tx.block.getId(),
+                blockHeight: tx.block.height
               }
             }))
-          }, [])
-
-          if (!txs.length) return cb(new Error('no txs found'))
-
-          cb(null, txs.map(function (tx) {
-            return {
-              txId: tx.getId(),
-              txHex: tx.toHex(),
-              blockId: tx.block.getId(),
-              blockHeight: tx.block.height
-            }
-          }))
+          })
         },
         unspents: function (addr, cb) {
-          cb(null, unspents)
+          process.nextTick(function () {
+            cb(null, unspents)
+          })
         },
         summary: function (addrs, cb) {
-          cb(null, addrs.map(function (a) {
-            return {
-              balance: total
-            }
-          }))
+          process.nextTick(function () {
+            cb(null, addrs.map(function (a) {
+              return {
+                balance: total
+              }
+            }))
+          })
         }
       },
       transactions: {
@@ -144,5 +150,5 @@ function fund (address, walletUnspents) {
 }
 
 function sendTx (tx, cb) {
-  cb()
+  process.nextTick(cb)
 }
