@@ -26,9 +26,10 @@ module.exports = function (options) {
   var networkName = options.networkName || 'testnet'
   var unspents = []
   var blocks = []
-  var w = new Wallet({
-    networkName: networkName,
-    blockchain: options.blockchain || {
+  var blockchain = options.blockchain
+  if (!blockchain) {
+    var ADDR_CACHE = {}
+    blockchain = {
       blocks: {
         get: function (heights, cb) {
           process.nextTick(function () {
@@ -57,21 +58,19 @@ module.exports = function (options) {
               return txs.concat(b.transactions.filter(function (tx) {
                 tx.block = b // ugly side effect
 
-                var added = tx.outs.map(function (out) {
-                  return utils.getAddressFromOutput(out, networkName)
-                }).some(hasAddr)
-
-                if (!added) {
-                  added = tx.ins.map(function (input) {
+                var txId = tx.getId()
+                var cached = ADDR_CACHE[txId]
+                if (!cached) {
+                  cached = ADDR_CACHE[txId] = tx.outs.map(function (out) {
+                    return utils.getAddressFromOutput(out, networkName)
+                  }).concat(tx.ins.map(function (input) {
                     return utils.getAddressFromInput(input, networkName)
-                  }).some(hasAddr)
+                  }))
                 }
 
-                return added
-
-                function hasAddr (addr) {
+                return cached.some(function (addr) {
                   return addrs.indexOf(addr) !== -1
-                }
+                })
               }))
             }, [])
 
@@ -121,7 +120,12 @@ module.exports = function (options) {
           sendTx(tx, cb)
         }
       }
-    },
+    }
+  }
+
+  var w = new Wallet({
+    networkName: networkName,
+    blockchain: blockchain,
     priv: priv
   })
 
