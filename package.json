@@ -1,5 +1,5 @@
 {
-  "name": "tradle-test-helpers",
+  "name": "@tradle/test-helpers",
   "private": true,
   "version": "0.0.1",
   "description": "helpers, mocks, for testing tradle components",
@@ -27,10 +27,10 @@
   },
   "homepage": "https://github.com/tradle/test-helpers#readme",
   "dependencies": {
-    "bitcoinjs-lib": "mvayngrib/bitcoinjs-lib#lazy1.5.7",
+    "@tradle/bitcoinjs-lib": "^1.5.7",
     "q": "^1.4.1",
-    "simple-wallet": "git://github.com/mvayngrib/simple-wallet",
-    "tradle-utils": "^0.2.2",
+    "@tradle/simple-wallet": "^0.0.1",
+    "@tradle/utils": "^0.2.2",
     "typeforce": "^1.0.0"
   },
   "devDependencies": {

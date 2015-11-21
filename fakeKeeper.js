@@ -1,5 +1,5 @@
 var Q = require('q')
-var utils = require('tradle-utils')
+var utils = require('@tradle/utils')
 
 function keeperForMap (map) {
   var keep = {

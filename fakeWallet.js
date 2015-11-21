@@ -1,7 +1,7 @@
-var Wallet = require('simple-wallet')
-var bitcoin = require('bitcoinjs-lib')
+var Wallet = require('@tradle/simple-wallet')
+var bitcoin = require('@tradle/bitcoinjs-lib')
 var typeforce = require('typeforce')
-var utils = require('tradle-utils')
+var utils = require('@tradle/utils')
 var crypto = require('crypto')
 
 module.exports = function (options) {
