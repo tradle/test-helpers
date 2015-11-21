@@ -1,6 +1,5 @@
 {
   "name": "@tradle/test-helpers",
-  "private": true,
   "version": "0.0.1",
   "description": "helpers, mocks, for testing tradle components",
   "main": "index.js",
