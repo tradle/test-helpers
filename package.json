@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/tradle/test-helpers#readme",
   "dependencies": {
-    "bitcoinjs-lib": "mvayngrib/bitcoinjs-lib#lazy1.4.5",
+    "bitcoinjs-lib": "mvayngrib/bitcoinjs-lib#lazy1.5.7",
     "q": "^1.4.1",
     "simple-wallet": "git://github.com/mvayngrib/simple-wallet",
     "tradle-utils": "^0.2.2",
