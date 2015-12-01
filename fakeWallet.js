@@ -74,7 +74,7 @@ module.exports = function (options) {
               }))
             }, [])
 
-            if (!txs.length) return cb(new Error('no txs found'))
+            if (!txs.length) return cb(null, [])
 
             cb(null, txs.map(function (tx) {
               return {
