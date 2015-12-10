@@ -30,6 +30,17 @@ function keeperForMap (map) {
     destroy: function () {
       return Q.resolve()
     },
+    removeOne: function (key) {
+      delete map[key]
+      return Q.resolve()
+    },
+    removeMany: function (keys) {
+      keys.forEach(function (key) {
+        delete map[key]
+      })
+
+      return Q.resolve()
+    },
     isKeeper: function () {
       return true
     }
