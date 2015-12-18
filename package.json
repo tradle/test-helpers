@@ -1,6 +1,6 @@
 {
   "name": "@tradle/test-helpers",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "helpers, mocks, for testing tradle components",
   "main": "index.js",
   "scripts": {
