@@ -27,9 +27,9 @@
   "homepage": "https://github.com/tradle/test-helpers#readme",
   "dependencies": {
     "@tradle/bitcoinjs-lib": "^1.5.7",
-    "q": "^1.4.1",
     "@tradle/simple-wallet": "^0.0.1",
-    "@tradle/utils": "^0.2.2",
+    "@tradle/utils": "^1.0.0",
+    "q": "^1.4.1",
     "typeforce": "^1.0.0"
   },
   "devDependencies": {
