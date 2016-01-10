@@ -102,6 +102,26 @@ module.exports = function (options) {
         }
       },
       transactions: {
+        get: function (txIds, cb) {
+          process.nextTick(function () {
+            var txs = blocks.reduce(function (soFar, b) {
+              return soFar.concat(b.transactions)
+            })
+            .filter(function (tx) {
+              return txIds.indexOf(tx.getId()) !== -1
+            })
+            .map(function (tx) {
+              return {
+                txId: tx.getId(),
+                txHex: tx.toHex(),
+                blockId: tx.block.getId(),
+                blockHeight: tx.block.height
+              }
+            })
+
+            cb(null, txs)
+          })
+        },
         propagate: function (tx, cb) {
           var b = new bitcoin.Block()
           if (blocks.length) {
