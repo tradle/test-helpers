@@ -65,7 +65,9 @@ module.exports = function (options) {
                     return utils.getAddressFromOutput(out, networkName)
                   }).concat(tx.ins.map(function (input) {
                     return utils.getAddressFromInput(input, networkName)
-                  }))
+                  })).filter(function (a) {
+                    return a // filter out nulls
+                  })
                 }
 
                 return cached.some(function (addr) {
@@ -106,7 +108,7 @@ module.exports = function (options) {
           process.nextTick(function () {
             var txs = blocks.reduce(function (soFar, b) {
               return soFar.concat(b.transactions)
-            })
+            }, [])
             .filter(function (tx) {
               return txIds.indexOf(tx.getId()) !== -1
             })
