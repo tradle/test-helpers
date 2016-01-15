@@ -4,14 +4,12 @@ var utils = require('@tradle/utils')
 function keeperForMap (map) {
   var keep = {
     _map: map,
-    put: function (key, val) {
-      var numPut = 0
-      if (!(key in map)) {
-        map[key] = val
-        numPut++
-      }
-
-      return Q.resolve(numPut)
+    put: putOne,
+    putOne: putOne,
+    putMany: function (pairs) {
+      return Q.all(pairs.map(function (pair) {
+        return keep.put(pair.key, pair.value)
+      }))
     },
     getOne: function (key) {
       return (key in map) ? Q.resolve(map[key]) : Q.reject(new Error('not found'))
@@ -44,6 +42,16 @@ function keeperForMap (map) {
     isKeeper: function () {
       return true
     }
+  }
+
+  function putOne (key, val) {
+    var numPut = 0
+    if (!(key in map)) {
+      map[key] = val
+      numPut++
+    }
+
+    return Q.resolve(numPut)
   }
 
   return keep
