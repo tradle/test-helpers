@@ -34,11 +34,16 @@ module.exports = function (options) {
         get: function (heights, cb) {
           process.nextTick(function () {
             var matched = blocks.filter(function (b) {
-              return heights.indexOf(b.height) !== -1
+              return heights.indexOf(b.blockHeight) !== -1
             })
 
             if (matched.length) return cb(null, matched)
             else return cb(new Error('no blocks found'))
+          })
+        },
+        latest: function (cb) {
+          process.nextTick(function () {
+            cb(null, blocks[blocks.length - 1])
           })
         }
       },
@@ -52,7 +57,7 @@ module.exports = function (options) {
 
             height = height || 0
             var txs = blocks.filter(function (b) {
-              return b.height >= height
+              return b.blockHeight >= height
             })
             .reduce(function (txs, b) {
               return txs.concat(b.transactions.filter(function (tx) {
@@ -83,7 +88,7 @@ module.exports = function (options) {
                 txId: tx.getId(),
                 txHex: tx.toHex(),
                 blockId: tx.block.getId(),
-                blockHeight: tx.block.height
+                blockHeight: tx.block.blockHeight
               }
             }))
           })
@@ -117,7 +122,7 @@ module.exports = function (options) {
                 txId: tx.getId(),
                 txHex: tx.toHex(),
                 blockId: tx.block.getId(),
-                blockHeight: tx.block.height
+                blockHeight: tx.block.blockHeight
               }
             })
 
@@ -125,22 +130,13 @@ module.exports = function (options) {
           })
         },
         propagate: function (tx, cb) {
-          var b = new bitcoin.Block()
-          if (blocks.length) {
-            b.prevHash = blocks[blocks.length - 1].getHash()
-          } else {
-            b.prevHash = crypto.randomBytes(32)
-          }
-
-          b.merkleRoot = crypto.randomBytes(32)
-          b.timestamp = Date.now() / 1000
-          b.bits = Math.random() * 100000000 | 0
-          b.nonce = Math.random() * 100000000 | 0
-          b.height = blocks.length
-          b.transactions = [bitcoin.Transaction.fromHex(tx)]
-          blocks.push(b)
+          var b = addFakeBlock(blocks)
+          b.transactions.push(bitcoin.Transaction.fromHex(tx))
           sendTx(tx, cb)
         }
+      },
+      _advanceToNextBlock: function () {
+        addFakeBlock(blocks)
       }
     }
   }
@@ -177,4 +173,22 @@ function fund (address, walletUnspents) {
 
 function sendTx (tx, cb) {
   process.nextTick(cb)
+}
+
+function addFakeBlock (blocks) {
+  var b = new bitcoin.Block()
+  if (blocks.length) {
+    b.prevHash = blocks[blocks.length - 1].getHash()
+  } else {
+    b.prevHash = crypto.randomBytes(32)
+  }
+
+  b.merkleRoot = crypto.randomBytes(32)
+  b.timestamp = Date.now() / 1000
+  b.bits = Math.random() * 100000000 | 0
+  b.nonce = Math.random() * 100000000 | 0
+  b.height = b.blockHeight = blocks.length
+  b.transactions = []
+  blocks.push(b)
+  return b
 }
